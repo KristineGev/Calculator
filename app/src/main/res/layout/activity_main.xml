@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textDirection="rtl"
+        android:textAlignment="textEnd"
         android:textSize="@dimen/text_size_number_display" />
 
 
@@ -20,10 +20,10 @@
         android:id="@+id/display_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:maxLength="15"
         android:layout_weight="0.5"
-        android:textDirection="rtl"
+        android:maxLength="15"
+        android:maxLines="1"
+        android:textAlignment="textEnd"
         android:textSize="@dimen/text_size_result_display" />
 
     <LinearLayout
@@ -37,18 +37,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClear"
             android:padding="@dimen/button_padding"
             android:text="AC"
-            android:textSize="@dimen/text_size_result_display"
-            android:onClick="onClear"/>
+            android:textSize="@dimen/text_size_result_display" />
 
         <Button
             android:id="@+id/button_del"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Del"
             android:onClick="onDeleteClick"
+            android:text="Del"
             android:textSize="@dimen/text_size_result_display" />
 
         <Button
@@ -56,8 +56,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onPercentClick"
             android:text="%"
+            android:onClick="onPercentClick"
             android:textSize="@dimen/text_size_result_display" />
 
         <Button
@@ -235,6 +235,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="+/-"
+            android:onClick="onSignButtonClick"
             android:textSize="@dimen/text_size_result_display" />
 
         <Button
@@ -242,7 +243,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="calculate"
+            android:onClick="onEqualClick"
             android:text="="
             android:textSize="@dimen/text_size_result_display" />
 
