@@ -8,17 +8,18 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+
     Button numberButton, operationButton;
     TextView resultDisplay, operationDisplay;
-    String numberField = "";
-    String operations = "";
+    String resultString = "";
+    String operationString = "";
     String operator = "";
     String lastOperator = "";
-    boolean isPercentClicked = false;
-
     Double firstNumber = 0.0;
     Double secondNumber = 0.0;
     Double result = 0.0;
+    boolean isPercentClicked = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,25 +36,39 @@ public class MainActivity extends AppCompatActivity {
 
     public void onNumberButtonClick(View v) {
         numberButton = (Button) v;
-        numberField += numberButton.getText();
-        resultDisplay.setText(numberField);
+        resultString += numberButton.getText();
+        resultDisplay.setText(resultString);
     }
 
     public void onOperationClick(View v) {
-        if (numberField != "") {
-            firstNumber = Double.parseDouble(numberField);
+        if (resultString.length() > 0) {
+            if (resultString.endsWith("%")) {
+                firstNumber = Double.parseDouble(resultString.substring(0, resultString.length() - 1));
+            } else {
+                firstNumber = Double.parseDouble(resultString);
+            }
+        }
+
+        operator = ((Button) v).getText().toString();
+        if (firstNumber % 1 == 0) {
+            if (resultString.endsWith("%")) {
+                operationString += firstNumber.intValue() + "%" + operator;
+            } else {
+                operationString += firstNumber.intValue() + operator;
+            }
+        } else {
+            operationString += resultString + operator;
 
         }
-        operator = ((Button) v).getText().toString();
-        operations += firstNumber + operator;
-        operationDisplay.setText(operations);
-        numberField = "";
+
+        operationDisplay.setText(operationString);
+        resultString = "";
         calculate(v);
-        lastOperator += operator;
+        lastOperator = operator;
     }
 
     public void calculate(View v) {
-        if (numberField == "") {
+        if (resultString.length() == 0) {
             if (result == 0) {
                 secondNumber = result;
                 result = firstNumber;
@@ -63,48 +78,83 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } else {
-            secondNumber = Double.parseDouble(numberField);
-            operations += secondNumber;
+
+            if (resultString.endsWith("%")) {
+                secondNumber = Double.parseDouble(resultString.substring(0, resultString.length() - 1));
+            } else {
+                secondNumber = Double.parseDouble(resultString);
+            }
+
+            operationString += resultString;
+
         }
-        resultDisplay.setText(numberField);
-        numberField = "";
+        resultDisplay.setText(resultString);
+        resultString = "";
 
         if (lastOperator.length() > 0) {
-            switch (lastOperator.substring(lastOperator.length() - 1)) {
+            switch (lastOperator) {
                 case "+":
-                    result += secondNumber;
+                    if (!isPercentClicked) {
+                        result += secondNumber;
+                    }
+                    if (isPercentClicked) {
+                        result += result * secondNumber / 100;
+                        isPercentClicked = false;
+                    }
                     break;
                 case "-":
-                    result -= secondNumber;
+                    if (!isPercentClicked)
+                        result -= secondNumber;
+                    if (isPercentClicked) {
+                        result -= result * secondNumber / 100;
+                        isPercentClicked = false;
+                    }
                     break;
                 case "*":
-                    result *= secondNumber;
+                    if (!isPercentClicked) {
+                        result *= secondNumber;
+                    }
+                    if (isPercentClicked) {
+                        result *= secondNumber / 100;
+                        isPercentClicked = false;
+                    }
                     break;
                 case "/":
-                    result /= secondNumber;
+                    if (!isPercentClicked) {
+                        result /= secondNumber;
+                    }
+                    if (isPercentClicked) {
+                        result = result / secondNumber * 100;
+                        isPercentClicked = false;
+                    }
                     break;
                 default:
+
                     break;
             }
         }
-
-        numberField = result.toString();
-        operationDisplay.setText(operations);
-        numberField = "";
-        resultDisplay.setText(String.valueOf(result));
-    }
-
-    public void onPercentClick(View v) {
-
+        if (result % 1 == 0) {
+            resultString = String.valueOf(result.intValue());
+            resultDisplay.setText(resultString);
+        } else {
+            resultString = result.toString();
+            resultDisplay.setText(resultString);
+        }
+        operationDisplay.setText(operationString);
+        resultString = "";
     }
 
 
     public void onEqualClick(View v) {
         calculate(v);
-        operations = "";
-        numberField = "";
+        operationString = "";
+        resultString = "";
         operationDisplay.setText("");
-        resultDisplay.setText(String.valueOf(result));
+        if (result % 1 == 0) {
+            resultDisplay.setText(String.valueOf(result.intValue()));
+        } else {
+            resultDisplay.setText(String.valueOf(result));
+        }
         firstNumber = result;
         result = 0.00;
         lastOperator = "";
@@ -113,29 +163,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSignButtonClick(View v) {
-        Double res = Double.parseDouble(numberField) * -1;
-        resultDisplay.setText(String.valueOf(res));
-        numberField = String.valueOf(res);
+
+        Double res = Double.parseDouble(resultString) * -1;
+
+        if (res % 1 == 0) {
+            resultString = String.valueOf(res.intValue());
+        } else {
+            resultString = String.valueOf(res);
+        }
+        resultDisplay.setText(resultString);
+    }
+
+    public void onPercentClick(View v) {
+        isPercentClicked = true;
+        double num = Double.parseDouble(resultString);
+        resultDisplay.setText(String.valueOf(num / 100));
+        resultString += "%";
     }
 
     public void onDeleteClick(View v) {
-        String display = resultDisplay.getText().toString();
-        if (display.length() > 0) {
-            numberField = display.substring(0, display.length() - 1);
-            resultDisplay.setText(numberField);
+        if (resultString.length() > 0) {
+            resultString = resultString.substring(0, resultString.length() - 1);
+            resultDisplay.setText(resultString);
         } else
             resultDisplay.setText("0");
     }
 
     public void onClear(View view) {
         operationButton = (Button) view;
-        numberField = "";
-        operations = "";
+        resultString = "";
+        operationString = "";
         resultDisplay.setText("0");
         operationDisplay.setText("");
         result = 0.00;
         secondNumber = 0.00;
         lastOperator = "";
+        isPercentClicked = false;
     }
 }
 
